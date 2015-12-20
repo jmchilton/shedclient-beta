@@ -1,0 +1,7 @@
+# Require cwltool
+cwltool
+# Require celery
+celery
+# Require @jmchilton's modified galaxy-lib for this task
+git+https://github.com/jmchilton/galaxy-lib.git@shed
+
