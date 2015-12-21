@@ -3,6 +3,9 @@ tox
 nose
 coverage
 
+sqlalchemy
+flask
+
 # For dev
 sphinx
 
