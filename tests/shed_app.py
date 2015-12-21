@@ -23,15 +23,17 @@ def download(installable_type, id, version):
     )
     repo_tar_download_path = os.path.join(model.new_temp_dir(), "download.tar.gz")
     tar = tarfile.open(repo_tar_download_path, "w:gz")
+    print repo_path
+    print installable_type
     try:
-        base_name = os.path.basename(repo_path)
         tar.add(
-            os.path.join(repo_path),
-            arcname=base_name,
+            repo_path,
+            arcname=".",
             recursive=True,
         )
     finally:
         tar.close()
+    assert os.path.exists(repo_tar_download_path)
     return send_file(repo_tar_download_path)
 
 
@@ -58,7 +60,9 @@ class InMemoryShedDataModel(object):
         self._categories = []
 
     def new_temp_dir(self):
-        return os.path.join(self.directory, str(uuid.uuid4()))
+        temp_dir = os.path.join(self.directory, str(uuid.uuid4()))
+        os.makedirs(temp_dir)
+        return temp_dir
 
     def add_category(self, id, name):
         self._categories.append({"id": id, "name": name})

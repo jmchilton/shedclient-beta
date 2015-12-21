@@ -8,7 +8,7 @@ INSTALL_RECORD_FILE_NAME = "shed_install.json"
 class InstallDirectory(object):
 
     def __init__(self, shed_client_context):
-        self.shed_client_context
+        self.shed_client_context = shed_client_context
 
     def installable_directory(self, installable_type, id, version):
         return InstallableDirectory(self, installable_type, id, version)

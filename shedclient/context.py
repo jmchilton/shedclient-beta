@@ -12,7 +12,7 @@ def ensure(context_or_dict):
 class ShedClientContext(object):
 
     def __init__(self, **kwds):
-        self.install_directory = kwds.get("install_directory", "database/shed_installs")
+        self.install_directory_path = kwds.get("install_directory", "database/shed_installs")
         self.task_tracker_directory = kwds.get("task_tracker_directory", None)
 
         self._task_tracker = None
@@ -20,7 +20,7 @@ class ShedClientContext(object):
 
     def to_dict(self):
         return dict(
-            install_directory=self.install_directory,
+            install_directory=self.install_directory_path,
             task_tracker_directory=self.task_tracker_directory,
         )
 

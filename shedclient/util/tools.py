@@ -27,7 +27,7 @@ def find_single_tool(tool_directory, enable_beta_formats):
         recursive=True,
         enable_beta_formats=enable_beta_formats
     )
-    if not len(possible_tools) > 1:
+    if len(possible_tools) > 1:
         raise Exception("Found more than one potential tool.")
     if len(possible_tools) == 0:
         raise Exception("Found no potential tools in archive.")

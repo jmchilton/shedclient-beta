@@ -106,6 +106,8 @@ class MockShedTestCase(TempDirectoryTestCase):
 
         p = Process(target=worker, args=argv)
         p.start()
+        from time import sleep
+        sleep(1)
         self.worker = p
 
     def join_worker(self):
