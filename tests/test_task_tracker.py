@@ -1,6 +1,6 @@
 from test_utils import TempDirectoryContext
 
-from shedclient.framework import task_tracker
+from shedclient import task_tracker
 
 
 def test_task_tracker():

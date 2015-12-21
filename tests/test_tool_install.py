@@ -5,8 +5,11 @@ from .test_utils import (
     get_repo_path,
 )
 
+from six.moves.urllib.parse import urljoin
+
+from shedclient import context
 from shedclient.model.tasks import (
-    install,
+    install_from_url,
 )
 
 
@@ -20,9 +23,24 @@ class ToolInstallTestCase(MockShedTestCase):
             "0.1",
             repo_path,
         )
-        result = install.delay(dict(
+        shed_context = context.ShedClientContext(
+            install_directory=self.temp_directory,
+        )
+        base_shed_url = self.mock_shed.url
+        download_url = urljoin(
+            base_shed_url,
+            "api",
+            "galaxy",
+            "v1",
+            "galaxy_tools",
+            "cat",
+            "versions",
+            "0.1",
+            "download",
+        )
+        result = install_from_url.delay(shed_context.to_dict(), dict(
             target_directory=self.temp_directory,
-            url="http://google.com",
+            url=download_url,
         ))
         result.wait(10)
         assert os.path.exists(os.path.join(self.temp_directory, "download.tar.gz"))

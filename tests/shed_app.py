@@ -15,7 +15,7 @@ from flask import (
 app = Flask(__name__)
 
 
-@app.route('/api/galaxy/v1/<installable_type>s/<id>/versions/<version>/download', methods=['PUT'])
+@app.route('/api/galaxy/v1/<installable_type>s/<id>/versions/<version>/download', methods=['GET'])
 def download(installable_type, id, version):
     model = app.config["model"]
     repo_path = model.get_installable_path(
