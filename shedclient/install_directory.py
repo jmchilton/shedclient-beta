@@ -1,17 +1,36 @@
 import json
 import os
+import shutil
+import time
 
 SOURCE_DIRECTORY_NAME = "source"
+SOURCE_INSTALL_DIRECTORY_PATTERN = "source-install-%s"
 INSTALL_RECORD_FILE_NAME = "shed_install.json"
 
 
-class InstallDirectory(object):
+class InstallsDirectory(object):
 
     def __init__(self, shed_client_context):
         self.shed_client_context = shed_client_context
 
     def installable_directory(self, installable_type, id, version):
         return InstallableDirectory(self, installable_type, id, version)
+
+    def get_installables_version_strings(self, installable_type, id):
+        installables_directory = os.path.join(
+            self.shed_client_context.install_directory_path,
+            installable_type + "s",
+            id,
+        )
+        return os.listdir(installables_directory)
+
+    def installable_path(self, installable_type, id, version):
+        return os.path.join(
+            self.shed_client_context.install_directory_path,
+            installable_type + "s",
+            id,
+            version
+        )
 
 
 class InstallableDirectory(object):
@@ -34,6 +53,20 @@ class InstallableDirectory(object):
             self.id,
             self.version,
         )
+
+    def generate_install_directory(self):
+        timestamp = str(time.time()).replace(".", '')
+        install_dir_name = SOURCE_INSTALL_DIRECTORY_PATTERN % timestamp
+        install_directory = os.path.join(self.path, install_dir_name)
+        os.makedirs(install_directory)
+        return install_directory
+
+    def install(self, install_path):
+        shutil.move(install_path, self.source_path)
+
+    @property
+    def installed(self):
+        return os.path.exists(self.source_path)
 
     @property
     def install_record_path(self):

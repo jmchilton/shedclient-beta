@@ -1,21 +1,17 @@
-
-""" Provide abstractions over click testing of the
-TEST_DIR = os.path.dirname(__file__)
-TEST_DATA_DIR = os.path.join(TEST_DIR, "data")
-TEST_REPOS_DIR = os.path.join(TEST_DATA_DIR, "repos")
-"""
 from __future__ import print_function
-import os
+import contextlib
 from multiprocessing import Process
-from tempfile import mkdtemp
+import os
 import shutil
 from sys import version_info
+from tempfile import mkdtemp
 
 from galaxy.tools.deps.commands import which
 from shedclient.model.tasks import (
     app,
     APP_PATH,
 )
+from shedclient import context
 
 from .shed_app_test_utils import (
     setup_mock_shed,
@@ -62,6 +58,22 @@ class TempDirectoryContext(object):
         shutil.rmtree(self.temp_directory)
 
 
+@contextlib.contextmanager
+def shedclient_context():
+    temp_directory = mkdtemp()
+    try:
+        install_dir = os.path.join(temp_directory, "installs")
+        tracker_dir = os.path.join(temp_directory, "tracker")
+        os.makedirs(install_dir)
+        os.makedirs(tracker_dir)
+        yield context.ShedClientContext(
+            install_directory=install_dir,
+            task_tracker_directory=tracker_dir
+        )
+    finally:
+        shutil.rmtree(temp_directory)
+
+
 def worker(*argv):
     return app.worker_main(list(argv))
 
@@ -106,6 +118,7 @@ class MockShedTestCase(TempDirectoryTestCase):
 
         p = Process(target=worker, args=argv)
         p.start()
+        # Kombu can't create both queues at once or locks up.
         from time import sleep
         sleep(1)
         self.worker = p

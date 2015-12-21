@@ -44,8 +44,8 @@ class ToolInstallTestCase(MockShedTestCase):
             url=download_url,
         ))
         result.wait(10)
-        install_directory = shed_context.install_directory
-        installable_directory = install_directory.installable_directory("galaxy_tool", "cat", "0.1")
+        installs_directory = shed_context.installs_directory
+        installable_directory = installs_directory.installable_directory("galaxy_tool", "cat", "0.1")
         assert os.path.exists(installable_directory.path)
         assert os.path.exists(installable_directory.source_path)
         print(os.listdir(installable_directory.source_path))

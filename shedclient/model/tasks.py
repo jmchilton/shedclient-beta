@@ -45,23 +45,25 @@ app.conf.update(
 )
 
 
-@app.task()
+@app.task
 def install_from_url(shed_client_context, install_request):
     shed_client_context = context.ensure(shed_client_context)
     url = install_request["url"]
     installable_type = install_request["installable_type"]
     installable_id = install_request["id"]
     installable_version = install_request["version"]
-    installable_directory = shed_client_context.install_directory.installable_directory(
+    installable_directory = shed_client_context.installs_directory.installable_directory(
         installable_type,
         installable_id,
         installable_version
     )
-    target_directory = installable_directory.source_path
-    if os.path.exists(installable_directory.source_path):
+    if installable_directory.installed:
         raise Exception("Installable already exists.")
-    download_and_extract_archive(url, target_directory)
-    verify_download(installable_type, target_directory)
+
+    install_directory = installable_directory.generate_install_directory()
+    download_and_extract_archive(url, install_directory)
+    verify_download(installable_type, install_directory)
+    installable_directory.install(install_directory)
 
 
 def verify_download(installable_type, target_directory):

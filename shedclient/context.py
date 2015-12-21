@@ -1,5 +1,5 @@
 from .task_tracker import build_task_tracker
-from .install_directory import InstallDirectory
+from .install_directory import InstallsDirectory
 
 
 def ensure(context_or_dict):
@@ -16,7 +16,7 @@ class ShedClientContext(object):
         self.task_tracker_directory = kwds.get("task_tracker_directory", None)
 
         self._task_tracker = None
-        self._install_directory = None
+        self._installs_directory = None
 
     def to_dict(self):
         return dict(
@@ -34,10 +34,10 @@ class ShedClientContext(object):
         return self._task_tracker
 
     @property
-    def install_directory(self):
+    def installs_directory(self):
         # TODO: lock
-        if self._install_directory is None:
-            self._install_directory = InstallDirectory(
+        if self._installs_directory is None:
+            self._installs_directory = InstallsDirectory(
                 self
             )
-        return self._install_directory
+        return self._installs_directory
