@@ -45,6 +45,12 @@ app.conf.update(
 )
 
 
+VERIFY_METHODS = {
+    "galaxy_tool": lambda target_directory: tools.verify_tool_directory(target_directory, enable_beta_formats=False),
+    "cwl_tool": lambda target_directory: tools.verify_tool_directory(target_directory, enable_beta_formats=True),
+}
+
+
 @app.task
 def install_from_url(shed_client_context, install_request):
     shed_client_context = context.ensure(shed_client_context)
@@ -60,19 +66,22 @@ def install_from_url(shed_client_context, install_request):
     if installable_directory.installed:
         raise Exception("Installable already exists.")
 
-    install_directory = installable_directory.generate_install_directory()
-    download_and_extract_archive(url, install_directory)
-    verify_download(installable_type, install_directory)
-    installable_directory.install(install_directory)
+    target_directory = installable_directory.generate_install_directory()
+    download_and_extract_archive(url, target_directory)
+    verify_download(installable_type, target_directory)
+    handle_install(installable_type, installable_directory, target_directory)
+    installable_directory.install(target_directory)
+
+
+def handle_install(install_directory, installable_directory, target_directory):
+    pass
 
 
 def verify_download(installable_type, target_directory):
-    if installable_type == "galaxy_tool":
-        tools.verify_tool_directory(target_directory, enable_beta_formats=False)
-    elif installable_type == "cwl_tool":
-        tools.verify_tool_directory(target_directory, enable_beta_formats=True)
-    else:
+    verify_method = VERIFY_METHODS.get(installable_type, None)
+    if verify_method is None:
         raise Exception("Installable type [%s] not yet implemented." % installable_type)
+    verify_method(target_directory)
 
 
 def download_and_extract_archive(url, target_directory):
