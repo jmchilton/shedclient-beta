@@ -1,6 +1,6 @@
 
-*.bundled.js
 node_modules
+packed
 
 *.py[cod]
 

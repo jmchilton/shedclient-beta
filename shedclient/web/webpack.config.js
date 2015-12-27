@@ -2,19 +2,16 @@
 
 var webpack = require('webpack'),
     path = require( 'path' ),
-    scriptsBase = path.join( __dirname, 'scripts' ),
-    libsBase = path.join( scriptsBase, 'libs' );
-
-
+    scriptsBase = path.join( __dirname, 'scripts' );
 
 // webpack.config.js
 module.exports = {
   entry: {
-    main   : 'main.js',
+    main   : 'main.coffee',
   },
   output  : {
-	path        : './',
-	filename    : '[name].bundled.js'
+    path        : 'packed',
+    filename    : '[name].js'
   },
   resolve: {
     // Absolute path that contains modules
@@ -32,10 +29,16 @@ module.exports = {
 
   module: {
     loaders: [
-      { test: /\.less$/, loader: 'style!css!less' },
-      { test: /\.css$/, loader: 'style!css' },
-      { test: /\.coffee$/, loader: 'coffee' },
-      { test: /\.js$/, loader: 'babel' }
+      {test: /bootstrap\/js\//, loader: 'imports?jQuery=jquery'},
+      {test: /\.jade$/, loader: 'jade'},
+      {test: /\.less$/, loader: 'style!css!less'},
+      {test: /\.css$/, loader: 'style!css'},
+      {test: /\.coffee$/, loader: 'coffee'},
+      {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=8192&mimetype=image/svg+xml'},
+      {test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=8192&mimetype=application/font-woff2'},
+      {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=8192&mimetype=application/font-woff'},
+      {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=8192&mimetype=application/octet-stream'},
+      {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'}
     ]
   },
 
