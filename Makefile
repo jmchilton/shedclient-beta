@@ -16,7 +16,7 @@ DOC_URL?=https://shedclient.readthedocs.org
 PROJECT_URL?=https://github.com/galaxyproject/shedclient
 PROJECT_NAME?=shedclient
 TEST_DIR?=tests
-
+WEB_DIR=$(SOURCE_DIR)/web
 
 
 .PHONY: clean-pyc clean-build docs clean
@@ -105,6 +105,18 @@ open-rtd: docs
 
 open-project:
 	open $(PROJECT_URL) || xdg-open $(PROJECT_URL)
+
+npm-deps:
+	cd $(WEB_DIR) && npm install
+
+webpack: npm-deps
+	cd $(WEB_DIR) && ./node_modules/webpack/bin/webpack.js
+
+webpack-monitor: npm-deps
+	cd $(WEB_DIR) && ./node_modules/webpack/bin/webpack.js --watch
+
+serve:
+	python $(WEB_DIR)/flask_view_adapter.py
 
 dist: clean
 	$(IN_VENV) python setup.py sdist bdist_egg bdist_wheel
