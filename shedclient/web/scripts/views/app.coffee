@@ -25,19 +25,19 @@ class AppView extends Backbone.View
     }
     @currentView = null
     @currentViewName = null
-    @showContent('main')
+    @showContent 'main'
 
   showMain: ->
-    @showContent('main', MainView)
+    @showContent 'main', MainView
 
   showShed: ->
-    @showContent('shed', ShedView)
+    @showContent 'shed', ShedView
 
   showDependencies: ->
-    @showContent('dependencies', DependenciesView)
+    @showContent 'dependencies', DependenciesView
 
   showPanel: ->
-    @showContent('panel', PanelView)
+    @showContent 'panel', PanelView
 
   showContent: (viewName, viewClass) ->
     targetView = @contentViews[viewName]
@@ -48,6 +48,7 @@ class AppView extends Backbone.View
     if @currentView != null and @currentView != targetView
       @currentView.$el.hide()
     @currentView = targetView
+    @currentView.render()
     @currentView.$el.show()
 
   $content: -> $(@$el.find("#content"))

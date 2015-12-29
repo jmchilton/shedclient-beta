@@ -1,15 +1,20 @@
 import json
 import os
+
 try:
     from flask import (
         Flask,
         send_from_directory,
         request,
+        Markup,
+        url_for,
     )
 except ImportError:
     Flask = None
     send_from_directory = None
     request = None
+    Markup = None
+    url_for = None
 
 web_folder = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 packed_folder = os.path.join(web_folder, "packed")
@@ -30,7 +35,11 @@ managed_tool_conf_view = managed_conf.ManagedConfView(managed_tool_conf)
 
 @app.route('/', methods=['GET'])
 def index():
-    return send_from_directory(web_folder, 'index.html')
+    index = os.path.join(web_folder, "index.html")
+    with open(index, "r") as f:
+        index_contents = f.read()
+    index_contents = index_contents.replace('ROOT_URL', request.url_root)
+    return index_contents
 
 
 @app.route('/shed_tool_conf', methods=['GET', 'PUT'])
