@@ -18,13 +18,19 @@ class PanelView extends ContentView
   $createSectionButton: -> @$el.find("#create-section-button")
   $saveButton: -> @$el.find("#save-button")
   $treeEl: -> @$el.find("#panel_tree")
+  tree: -> @$treeEl().jstree(true)
 
   initialize: ->
     super.initialize
     _.bindAll @
     @model.on "change", @updateContents
+    @$saveButton().on "click", @save
     @$createLabelButton().on "click", @showNewLabelModal
     @$createSectionButton().on "click", @showNewSectionModal
+
+  save: ->
+    items = (@nodeToItem(node) for node in @tree().get_json("#"))
+    @model.update(items)
 
   showNewSectionModal: ->
     modal = new ModalView
@@ -40,18 +46,18 @@ class PanelView extends ContentView
 
   newSection: (modalView) ->
     data = modalView.formData()
-    node = @itemToTreeNode {type: "section", name: data.name, id: data.id, items: [] }
+    node = @itemToNode {type: "section", name: data.name, id: data.id, items: [] }
     @addNode node
     modalView.teardown()
 
   newLabel: (modalView) ->
     data = modalView.formData()
-    node = @itemToTreeNode {type: "label", text: data.text }
+    node = @itemToNode {type: "label", text: data.text }
     @addNode node
     modalView.teardown()
 
   addNode: (node) ->
-    x = @$treeEl().jstree(true).create_node null, node
+    @tree().create_node null, node
 
   error: (e) ->
     console.log e
@@ -100,11 +106,11 @@ class PanelView extends ContentView
     allowed
 
   modelToTree: () ->
-    children = (@itemToTreeNode(item) for item in (@model.attributes.contents.items or []))
+    children = (@itemToNode(item) for item in (@model.attributes.contents.items or []))
     # {"text": "Shed Managed Tools", "children": children}
     children
 
-  itemToTreeNode: (item) ->
+  itemToNode: (item) ->
     children = null
     opened = true
     if item.type == "tool"
@@ -117,18 +123,25 @@ class PanelView extends ContentView
     else if item.type == "section"
       icon = "folder"
       text = item.name
-      children = (@itemToTreeNode(childItem) for childItem in (item.items or []))
+      children = (@itemToNode(childItem) for childItem in (item.items or []))
     else if item.type == "label"
       icon = "pencil-square"
       text = item.text
+
+    data = _.omit(item, 'items')
     item =
       text: text
       icon: "fa fa-" + icon
-      data: {active: true, type: item.type},
+      data: data,
       opened: opened
     if children != null
       item["children"] = children
     item
+
+  nodeToItem: (node) ->
+    item = _.clone(node.data)
+    if item.type in ['section']
+      item['items'] = (@nodeToItem(childNode) for childNode in (node.children))
 
   render: ->
     @model.fetch()
