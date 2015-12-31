@@ -1,5 +1,12 @@
-div
-  p The tool panel...
-
-div
-  textarea#panel_contents
+div.toolbar()
+  form.form-inline(role="form")
+    strong(style="margin-right: 30px;") Tool Panel
+    button.btn.btn-default.primary-button#save-button
+      span.fa.fa-save
+    button.btn.btn-default.primary-button#create-section-button
+      span.fa.fa-plus
+      span.fa.fa-folder
+    button.btn.btn-default.primary-button#create-label-button
+      span.fa.fa-plus
+      span.fa.fa-bookmark-o.fa-rotate-90
+div#panel_tree(style="width: 100%;")

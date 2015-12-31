@@ -17,13 +17,15 @@ except ImportError:
     url_for = None
 
 web_folder = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-packed_folder = os.path.join(web_folder, "packed")
+static_folder = os.path.join(web_folder, "static")
+packed_folder = os.path.join(static_folder, "packed")
+vendor_folder = os.path.join(static_folder, "vendor")
 
 if Flask:
     app = Flask(
         __name__,
         static_url_path='/static',
-        static_folder=packed_folder,
+        static_folder=static_folder,
     )
 else:
     app = None

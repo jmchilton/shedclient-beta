@@ -10,8 +10,9 @@ module.exports = {
     main   : 'main.coffee',
   },
   output  : {
-    path        : 'packed',
-    filename    : '[name].js'
+    path        : 'static/packed/',
+    filename    : '[name].js',
+    publicPath  : 'static/packed/'
   },
   resolve: {
     // Absolute path that contains modules
