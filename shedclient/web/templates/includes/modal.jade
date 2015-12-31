@@ -1,0 +1,15 @@
+mixin modal(title)
+  div.modal-dialog
+    div.modal-content
+      div.modal-header
+        button.close(type="button" class="close" data-dismiss="modal")
+          span &times
+        h4.modal-title= title
+      div.modal-body
+        form
+          block
+      div.modal-footer
+        button.btn.btn-default(type="button" data-dismiss="modal")
+          span Close
+        button#ok-button.btn.btn-primary(type="button")
+          span Ok
