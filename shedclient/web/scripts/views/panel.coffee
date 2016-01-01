@@ -79,8 +79,8 @@ class PanelView extends ContentView
         error: @error
       grid:
         columns: [
-          {width: "50%", header: "Tool Path"},
-          {width: "5%", header: "Active", value: "active"},
+          {width: '50%', header: 'Tool Path'},
+          {width: '5%', header: 'Active', value: 'active_html'},
         ]
       dnd:
         check_while_dragging: true
@@ -125,23 +125,28 @@ class PanelView extends ContentView
       text = item.name
       children = (@itemToNode(childItem) for childItem in (item.items or []))
     else if item.type == "label"
-      icon = "pencil-square"
+      icon = "bookmark-o fa-rotate-90"
       text = item.text
 
-    data = _.omit(item, 'items')
+    data = _.defaults(_.omit(item, 'items'), {active: true})
+    if not data['active']
+      data['active_html'] = '<i class="fa fa-times"></i>&nbsp;'
+    else
+      data['active_html'] = '<i class="fa fa-check"></i>&nbsp;'
     item =
       text: text
-      icon: "fa fa-" + icon
+      icon: 'fa fa-' + icon
       data: data,
       opened: opened
     if children != null
-      item["children"] = children
+      item['children'] = children
     item
 
   nodeToItem: (node) ->
-    item = _.clone(node.data)
+    item = _.omit _.clone(node.data), 'active_html'
     if item.type in ['section']
       item['items'] = (@nodeToItem(childNode) for childNode in (node.children))
+    item
 
   render: ->
     @model.fetch()

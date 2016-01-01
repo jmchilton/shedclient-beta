@@ -6,7 +6,7 @@ class ToolPanelModel extends Backbone.Model
   id: ""
 
   update: (items) ->
-    @attributes.items = items
+    @attributes['contents']['items'] = items
     @save(@attributes, {type: 'PUT'})
 
 module.exports = ToolPanelModel

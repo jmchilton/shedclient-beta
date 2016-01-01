@@ -5,6 +5,7 @@ $ = require 'jquery'
 MainView = require 'scripts/views/main.coffee'
 ShedView = require 'scripts/views/shed.coffee'
 DependenciesView = require 'scripts/views/dependencies.coffee'
+DependencyResolversView = require 'scripts/views/dependency_resolvers.coffee'
 PanelView = require 'scripts/views/panel.coffee'
 
 template = require 'templates/app.jade'
@@ -22,6 +23,7 @@ class AppView extends Backbone.View
       'shed': null
       'dependencies': null
       'panel': null
+      'dependency_resolvers': null
     }
     @currentView = null
     @currentViewName = null
@@ -38,6 +40,9 @@ class AppView extends Backbone.View
 
   showPanel: ->
     @showContent 'panel', PanelView
+
+  showDependencyResolvers: ->
+    @showContent 'dependency_resolvers', DependencyResolversView
 
   showContent: (viewName, viewClass) ->
     targetView = @contentViews[viewName]

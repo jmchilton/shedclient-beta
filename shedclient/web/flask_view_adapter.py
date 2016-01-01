@@ -47,9 +47,10 @@ def index():
 @app.route('/shed_tool_conf', methods=['GET', 'PUT'])
 def shed_tool_conf():
     if request.method == 'PUT':
-        return_json = managed_tool_conf_view.update(request.form)
-    else:
-        return_json = managed_tool_conf_view.get()
+        managed_tool_conf_view.update(json.loads(request.data))
+
+    return_json = managed_tool_conf_view.get()
+    print return_json
     return json.dumps(return_json)
 
 

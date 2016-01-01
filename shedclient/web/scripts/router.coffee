@@ -15,6 +15,7 @@ class ToolManagementRouter extends Backbone.Router
     '' : 'main'
     'panel' : 'panel'
     'dependencies' : 'dependencies'
+    'dependency_resolvers' : 'dependency_resolvers'
     'shed' : 'shed'
   }
 
@@ -34,6 +35,7 @@ class ToolManagementRouter extends Backbone.Router
   main: -> @appView().showMain()
   panel: -> @appView().showPanel()
   dependencies: -> @appView().showDependencies()
+  dependency_resolvers: -> @appView().showDependencyResolvers()
   shed: -> @appView().showShed()
 
   appView: -> window.appView
