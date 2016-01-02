@@ -1,0 +1,15 @@
+{
+    "tool_path": "${tool_conf_dir}/tools",
+    "monitor": true,
+    "groups": [
+        {
+            "id": "samtools_sort/",
+            "items": [
+                {"type": "tool", "file": "samtools_sort/0.1.18/samtools_sort.xml"}
+            ]
+        }
+    ],
+    "items": [
+        {"type": "group", "id": "samtools_sort/"}
+    ]
+}

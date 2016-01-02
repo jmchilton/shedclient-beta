@@ -1,0 +1,7 @@
+<dependency_resolvers>
+  <tool_shed_packages />
+  <galaxy_packages />
+  <galaxy_packages versionless="true" />
+  <conda />
+  <conda versionless="true" />
+</dependency_resolvers>

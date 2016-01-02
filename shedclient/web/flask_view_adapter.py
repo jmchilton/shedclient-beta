@@ -52,7 +52,8 @@ except ImportError:
 
 from galaxy.tools.deps.views import DependencyResolversView
 
-shed_client_app = ShedClientApp("install")
+config_ini_path = os.getenv("SHEDCLIENT_CONFIG_INI")
+shed_client_app = ShedClientApp(config_ini_path)
 
 
 def toolbox():
@@ -86,7 +87,7 @@ def index():
     return index_contents
 
 
-@app.route('/shed_tool_conf', methods=['GET', 'PUT'])
+@app.route('/api/shed_tool_conf', methods=['GET', 'PUT'])
 @jsonify
 def shed_tool_conf():
     view = managed_tool_conf_view()
@@ -96,7 +97,7 @@ def shed_tool_conf():
     return view.get()
 
 
-@app.route('/dependency_resolvers', methods=['GET', 'PUT'])
+@app.route('/api/dependency_resolvers', methods=['GET', 'PUT'])
 @jsonify
 @consumes_dependencies_view
 def dependency_resolvers(view):
@@ -105,22 +106,29 @@ def dependency_resolvers(view):
     return view.index()
 
 
-@app.route('/dependency_resolvers/dependency', methods=['GET'])
+@app.route('/api/dependency_resolvers/dependency', methods=['GET'])
 @jsonify
 @consumes_dependencies_view
 def get_manager_dependency(view):
-    return view.manager_dependency(request.args)
+    return view.manager_dependency(**request.args)
 
 
-@app.route('/dependency_resolvers/<index>/dependency', methods=['GET'])
+@app.route('/api/dependency_resolvers/toolbox', methods=['GET'])
+@jsonify
+@consumes_dependencies_view
+def toolbox_summary(view):
+    return view.toolbox_summary(**request.args)
+
+
+@app.route('/api/dependency_resolvers/<index>/dependency', methods=['GET'])
 @jsonify
 @consumes_dependencies_view
 def get_resolver_dependency(view, index):
     view = dependency_resolvers_view()
-    return view.manager_dependency(index, request.args)
+    return view.manager_dependency(index, **request.args)
 
 
-@app.route('/dependency_resolvers/<index>', methods=['GET'])
+@app.route('/api/dependency_resolvers/<index>', methods=['GET'])
 @jsonify
 @consumes_dependencies_view
 def show_dependency_resolver(view, index):

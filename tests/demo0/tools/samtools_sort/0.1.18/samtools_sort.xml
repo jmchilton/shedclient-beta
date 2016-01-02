@@ -1,0 +1,5 @@
+<tool id="samtools_sort" name="Samtools (Sort)" version="0.1.18">
+    <requirements>
+         <requirement version="0.1.18">samtools</requirement>
+    <requirements>
+</tool>

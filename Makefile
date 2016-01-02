@@ -118,6 +118,9 @@ webpack-monitor: npm-deps
 serve:
 	python $(WEB_DIR)/flask_view_adapter.py
 
+serve-demo:
+	SHEDCLIENT_CONFIG_INI=$(TEST_DIR)/demo0/config.ini python $(WEB_DIR)/flask_view_adapter.py
+
 dist: clean
 	$(IN_VENV) python setup.py sdist bdist_egg bdist_wheel
 	ls -l dist

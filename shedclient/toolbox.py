@@ -10,26 +10,40 @@ from galaxy.tools.toolbox import managed_conf
 
 from galaxy.util.dictifiable import Dictifiable
 from galaxy.util.bunch import Bunch
+from galaxy.util.properties import load_app_properties
+
 
 MANAGED_TOOL_CONF_FILENAME = "shed_tools.json"
 
 
+def resolve_path(path):
+    if path:
+        return os.path.abspath(path)
+    else:
+        return None
+
+
 class ShedClientApp(object):
 
-    def __init__(self, managed_directory):
+    def __init__(self, config_file=None):
+        properties = load_app_properties(ini_file=config_file)
         self.name = "shedclient"
+
+        tool_dependency_dir = resolve_path(properties.get("tool_dependency_dir", None))
+        managed_shed_conf = resolve_path("managed_shed_conf")
+        if not managed_shed_conf:
+            managed_shed_conf = os.path.join(tool_dependency_dir or '.', MANAGED_TOOL_CONF_FILENAME)
         self.config = Bunch(
-            use_tool_dependencies=True,
-            tool_dependency_dir=os.path.join(managed_directory, "dependencies"),
-            dependency_resolvers_config_file=None,
+            tool_dependency_dir=tool_dependency_dir,
+            use_tool_dependencies=tool_dependency_dir is not None,
+            dependency_resolvers_config_file=resolve_path(properties.get("dependency_resolvers_config_file", None)),
+            managed_shed_conf=managed_shed_conf,
+            tool_path=resolve_path(properties.get("tool_path", "tools"))
         )
-        self.managed_directory = managed_directory
         self.reload_toolbox()
 
     def reload_toolbox(self):
-        self.toolbox = ShedClientManagedToolBox(
-            self.managed_directory, self
-        )
+        self.toolbox = ShedClientManagedToolBox(self)
 
 
 class ShedClientTool(Dictifiable, object):
@@ -63,11 +77,12 @@ class ShedClientTool(Dictifiable, object):
 
 class ShedClientManagedToolBox(BaseGalaxyToolBox):
 
-    def __init__(self, managed_directory, app):
-        config_filename = os.path.join(managed_directory, MANAGED_TOOL_CONF_FILENAME)
+    def __init__(self, app):
+        config_filename = app.config.managed_shed_conf
+        tool_path = app.config.managed_shed_conf
         super(ShedClientManagedToolBox, self).__init__(
             config_filenames=[config_filename],
-            tool_root_dir=managed_directory,
+            tool_root_dir=tool_path,
             app=app,
         )
         self.managed_tool_conf = managed_conf.ManagedConf(config_filename)
