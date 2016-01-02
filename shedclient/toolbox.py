@@ -2,7 +2,9 @@
 tools, dependencies, and the dynamic tool conf.
 """
 
+import logging
 import os
+import sys
 
 from galaxy.tools.parser import get_tool_source
 from galaxy.tools.toolbox import BaseGalaxyToolBox
@@ -11,6 +13,8 @@ from galaxy.tools.toolbox import managed_conf
 from galaxy.util.dictifiable import Dictifiable
 from galaxy.util.bunch import Bunch
 from galaxy.util.properties import load_app_properties
+
+log = logging.getLogger(__name__)
 
 
 MANAGED_TOOL_CONF_FILENAME = "shed_tools.json"
@@ -26,11 +30,12 @@ def resolve_path(path):
 class ShedClientApp(object):
 
     def __init__(self, config_file=None):
+        configure_logging()
         properties = load_app_properties(ini_file=config_file)
         self.name = "shedclient"
 
         tool_dependency_dir = resolve_path(properties.get("tool_dependency_dir", None))
-        managed_shed_conf = resolve_path("managed_shed_conf")
+        managed_shed_conf = resolve_path(properties.get("managed_shed_conf", None))
         if not managed_shed_conf:
             managed_shed_conf = os.path.join(tool_dependency_dir or '.', MANAGED_TOOL_CONF_FILENAME)
         self.config = Bunch(
@@ -54,6 +59,11 @@ class ShedClientTool(Dictifiable, object):
         self.tool_dir = os.path.dirname(config_file)
         self.app = app
         self.parse(tool_source)
+
+        # TODO: remove toolbox logic that just assumes these toolshed
+        # properties are available.
+        self.guid = None
+        self.tool_shed = None
 
     def parse(self, tool_source):
         self.id = tool_source.parse_id()
@@ -92,3 +102,30 @@ class ShedClientManagedToolBox(BaseGalaxyToolBox):
         tool_source = get_tool_source(config_file, True)
         tool = ShedClientTool( config_file, tool_source, self.app, **kwds )
         return tool
+
+
+def configure_logging():
+    """
+    Allow some basic logging configuration to be read from ini file.
+    """
+    # Get root logger
+    root = logging.getLogger()
+    format = "%(name)s %(levelname)s %(asctime)s %(message)s"
+    level = logging._levelNames["DEBUG"]
+    destination = "stdout"
+    log.info("Logging at '%s' level to '%s'" % (level, destination))
+    # Set level
+    root.setLevel(level)
+    # Remove old handlers
+    for h in root.handlers[:]:
+        root.removeHandler(h)
+    # Create handler
+    if destination == "stdout":
+        handler = logging.StreamHandler(sys.stdout)
+    else:
+        handler = logging.FileHandler(destination)
+    # Create formatter
+    formatter = logging.Formatter(format)
+    # Hook everything up
+    handler.setFormatter(formatter)
+    root.addHandler(handler)

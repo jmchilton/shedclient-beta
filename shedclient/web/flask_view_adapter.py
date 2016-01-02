@@ -110,14 +110,14 @@ def dependency_resolvers(view):
 @jsonify
 @consumes_dependencies_view
 def get_manager_dependency(view):
-    return view.manager_dependency(**request.args)
+    return view.manager_dependency(**request.args.to_dict())
 
 
 @app.route('/api/dependency_resolvers/toolbox', methods=['GET'])
 @jsonify
 @consumes_dependencies_view
 def toolbox_summary(view):
-    return view.toolbox_summary(**request.args)
+    return view.toolbox_summary(**request.args.to_dict())
 
 
 @app.route('/api/dependency_resolvers/<index>/dependency', methods=['GET'])
@@ -125,7 +125,7 @@ def toolbox_summary(view):
 @consumes_dependencies_view
 def get_resolver_dependency(view, index):
     view = dependency_resolvers_view()
-    return view.manager_dependency(index, **request.args)
+    return view.manager_dependency(index, **request.args.to_dict())
 
 
 @app.route('/api/dependency_resolvers/<index>', methods=['GET'])
